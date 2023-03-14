@@ -3,13 +3,14 @@
 
 #include <string>
 #include <vector>
+#include "treemm.h"
 
 class Movie;
 
 class MovieDatabase
 {
   public:
-    MovieDatabase();
+    MovieDatabase(): m_loaded(false) {}
     bool load(const std::string& filename);
     Movie* get_movie_from_id(const std::string& id) const;
     std::vector<Movie*> get_movies_with_director(const std::string& director) const;
@@ -17,6 +18,13 @@ class MovieDatabase
     std::vector<Movie*> get_movies_with_genre(const std::string& genre) const;
 
   private:
+    bool m_loaded;
+    TreeMultimap<std::string, Movie*> m_id_tree;
+    TreeMultimap<std::string, Movie*> m_director_tree;
+    TreeMultimap<std::string, Movie*> m_actor_tree;
+    TreeMultimap<std::string, Movie*> m_genre_tree;
 };
+
+std::vector<std::string> processDataString(std::string s);
 
 #endif // MOVIEDATABASE_INCLUDED

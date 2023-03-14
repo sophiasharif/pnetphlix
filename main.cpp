@@ -1,4 +1,6 @@
 #include "UserDatabase.h"
+#include "MovieDatabase.h"
+#include "Movie.h"
 #include "User.h"
 #include "treemm.h"
 #include <iostream>
@@ -23,48 +25,56 @@ using namespace std;
   // data files to makde debuggiing easier, so you can replace the string
   // literals with the names of those smaller files.
 
-const string USER_DATAFILE  = "users.txt";
-const string MOVIE_DATAFILE = "movies.txt";
+const string USER_DATAFILE  = "/Users/sophiasharif/Desktop/projects/CS32/project-4/project-4/users.txt";
+const string MOVIE_DATAFILE = "/Users/sophiasharif/Desktop/projects/CS32/project-4/project-4/movies.txt";
 
 int main()
 {
-    TreeMultimap<string, int> tmm;
-    if (!tmm.find("hey").is_valid()) {
-        cout << "success1!" << endl;
-    }
-    tmm.insert("head", 4);
-    if (!tmm.find("hey").is_valid()) {
-        cout << "success2!" << endl;
-    }
-    TreeMultimap<string, int>::Iterator it = tmm.find("head");
-    if (it.is_valid() && it.get_value() == 4) {
-        cout << "successfully inserted new node!" << endl;
-    }
-    tmm.insert("head", 5);
-    it = tmm.find("head");
-    it.advance();
-    if (it.is_valid() && it.get_value() == 5) {
-        cout << "successfully appended value!" << endl;
-    }
-    tmm.insert("ee", 4);
-    tmm.insert("d", 4);
-    tmm.insert("ef", 4);
+    /// TREE MULTIMAP TESTING
+//    TreeMultimap<int, std::string> tmm;
+//    tmm.insert(1, "one");
+//    tmm.insert(2, "two");
+//    tmm.insert(3, "three");
+//    auto it1 = tmm.find(1);
+//    assert(it1.get_value() == "one");
+//    auto it2 = tmm.find(2);
+//    assert(it2.get_value() == "two");
+//    auto it3 = tmm.find(3);
+//    assert(it3.get_value() == "three");
+//
+//    TreeMultimap<int, std::string> tmm2;
+//    tmm2.insert(1, "one");
+//    tmm2.insert(2, "two");
+//    tmm2.insert(1, "uno");
+//    tmm2.insert(2, "dos");
+//
+//    auto it = tmm2.find(1);
+//    assert(it.get_value() == "one");
+//    it.advance();
+//    assert(it.get_value() == "uno");
+//    it.advance();
+//    assert(!it.is_valid());
+//    it = tmm2.find(2);
+//    assert(it.get_value() == "two");
+//    it.advance();
+//    assert(it.get_value() == "dos");
+//    it.advance();
+//    assert(!it.is_valid());
+//
+//    cout << "all test cases passed! " << endl;
     
-
-//    tmm.insert("head", 5);
-//    tmm.insert("head", 6);
-//    TreeMultimap<string, int>::Iterator it = tmm.find("head");
-//    while (it.is_valid()) {
-//        cout << it.get_value() << endl;
-//        it.advance();
-//    }
-    
+    /// USER DATABASE TESTING
 //	UserDatabase udb;
-//	if (0&&!udb.load(USER_DATAFILE))  // In skeleton, load always return false
+//	if (!udb.load(USER_DATAFILE))  // In skeleton, load always return false
 //	{
 //		cout << "Failed to load user data file " << USER_DATAFILE << "!" << endl;
 //		return 1;
 //	}
+//    User* u = udb.get_user_from_email("DevNguy@gmail.com");
+//    if (!u)
+//        cout << "user does not exist !!" << endl;
+//    else
+//        u->dump();
 //	for (;;)
 //	{
 //		cout << "Enter user email address (or quit): ";
@@ -79,5 +89,24 @@ int main()
 //			cout << "Found " << u->get_full_name() << endl;
 //	}
     
-    // TO DO: test creating tree
+    MovieDatabase mdb;
+    if (!mdb.load(MOVIE_DATAFILE)) 
+    {
+        cout << "Failed to load user data file " << USER_DATAFILE << "!" << endl;
+        return 1;
+    }
+    
+    cout << "BOOM: " << endl;
+    vector<Movie*> v = mdb.get_movies_with_actor("Benedict Cumberbatch");
+    for (auto m : v)
+        m->dump();
+    
+
+    
+//    User* u = udb.get_user_from_email("DevNguy@gmail.com");
+//    if (!u)
+//        cout << "user does not exist !!" << endl;
+//    else
+//        u->dump();
+    
 }

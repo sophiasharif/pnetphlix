@@ -14,28 +14,21 @@ private:
     class Iterator
     {
       public:
-        Iterator()
-            :m_isValid(false) {}
+        Iterator() : m_isValid(false) {}
         
-        Iterator(typename std::list<ValueType>::iterator it, typename std::list<ValueType>::iterator end)
-            :m_isValid(true), m_iterator(it), m_end(end)
-        {}
+        Iterator(typename std::list<ValueType>::iterator it,
+                 typename std::list<ValueType>::iterator end)
+            : m_isValid(true), m_iterator(it), m_end(end) {
+            }
 
-        ValueType& get_value() const
-        {
-            return *m_iterator;
-        }
+        ValueType& get_value() const { return *m_iterator; }
 
-        bool is_valid() const
-        {
-            return m_isValid;
-        }
+        bool is_valid() const { return m_isValid; }
 
         void advance()
         {
             m_iterator++;
-            if (m_iterator == m_end)
-                m_isValid = false;
+            if (m_iterator == m_end) m_isValid = false;
         }
 
       private:
@@ -44,91 +37,79 @@ private:
         bool m_isValid;
     };
 
-    TreeMultimap()
-    {
-        // Replace this line with correct code.
-    }
+    TreeMultimap() : m_root(nullptr) {}
 
-    ~TreeMultimap()
-    {
-        delete m_head;
-    }
+    ~TreeMultimap() { deleteNodes(m_root); }
 
     void insert(const KeyType& key, const ValueType& value)
     {
         
         // if we don't have a head, create one
-        if (!m_head) {
-            m_head = new Node(key, value);
+        if (!m_root) {
+            m_root = new Node(key, value);
             return;
         }
         
-        // if we already have the key in our system, append the new value
-        Node* keyNode = find(key, m_head);
-        if (keyNode) {
-            keyNode->append(value);
-            return;
+        // find the correct place to insert
+        Node* curr = m_root;
+        while(true) {
+            if (key < curr->key) {
+                if (curr->less == nullptr) {
+                    curr->less = new Node(key, value);
+                    return;
+                }
+                curr = curr->less;
+            }
+            else if (key == curr->key) {
+                curr->append(value);
+                return;
+            }
+            else {
+                if (curr->greater == nullptr) {
+                    curr->greater = new Node(key, value);
+                    return;
+                }
+                curr = curr->greater;
+            }
         }
-        
-        insertNew(key, value, m_head);
         
     }
 
     Iterator find(const KeyType& key) const
     {
-        Node* n = find(key, m_head);
-        if (!n) return Iterator();
+        Node* curr = m_root;
         
-        return Iterator(n->values.begin(), n->values.end());
+        // go down tree until correct location is found
+        while (curr != nullptr) {
+            if (key == curr->key)
+                return Iterator(curr->values.begin(), curr->values.end());
+            else if (key < curr->key)
+                curr = curr->less;
+            else
+                curr = curr->greater;
+        }
+        
+        // value not found; return invalid iterator
+        return Iterator();
     }
 
   private:
-    class Node {
-    public:
-        Node(KeyType key, ValueType value) {
-            this->key = key;
-            values.push_back(value);
-        }
-        void append(ValueType value) {
-            values.push_back(value);
-        }
+    struct Node {
+        Node(KeyType k, ValueType v) : less(nullptr), greater(nullptr), key(k), values({v}) {}
+        void append(ValueType value) { values.push_back(value); }
         KeyType key;
         std::list<ValueType> values;
-        Node* less = nullptr;
-        Node* greater = nullptr;
+        Node* less;
+        Node* greater;
     };
-    Node* m_head=nullptr;
-    Node* find(const KeyType& key, Node* current) const {
-        // MAKE THIS MORE EFFICIENT !!
-        
-        // base case
-        if (!current) return nullptr;
-        
-        // if we found the correct value, return iterator to value
-        if (current->key == key) return current;
-        
-        // recursive step
-        Node* less = find(key, current->less);
-        if (less) return less;
-        Node* greater = find(key, current->greater);
-        if (greater) return greater;
-        
-        return nullptr;
-    }
-    void insertNew(const KeyType& key, const ValueType& value, Node* current) {
-        if (key < current->key) {
-            if (!current->less) {
-                current->less = new Node(key, value);
-                return;
-            }
-            insertNew(key, value, current->less);
-        } else {
-            if (!current->greater) {
-                current->greater = new Node(key, value);
-                return;
-            }
-            insertNew(key, value, current->greater);
-        }
+    
+    Node* m_root;
+    
+    void deleteNodes(Node* current) {
+        if (!current) return;
+        deleteNodes(current->less);
+        deleteNodes(current->greater);
+        delete current;
     }
 };
 
