@@ -3,6 +3,7 @@
 #include "Movie.h"
 #include "User.h"
 #include "treemm.h"
+#include "Recommender.h"
 #include <iostream>
 #include <string>
 using namespace std;
@@ -25,8 +26,29 @@ using namespace std;
   // data files to makde debuggiing easier, so you can replace the string
   // literals with the names of those smaller files.
 
-const string USER_DATAFILE  = "/Users/sophiasharif/Desktop/projects/CS32/project-4/project-4/users.txt";
-const string MOVIE_DATAFILE = "/Users/sophiasharif/Desktop/projects/CS32/project-4/project-4/movies.txt";
+const string USER_DATAFILE  = "/Users/sophiasharif/Desktop/projects/CS32/project-4/data/recommender-test/users.txt";
+const string MOVIE_DATAFILE = "/Users/sophiasharif/Desktop/projects/CS32/project-4/data/recommender-test/movies.txt";
+
+void findMatches(const Recommender& r,
+ const MovieDatabase& md,
+ const string& user_email,
+ int num_recommendations) {
+ // get up to ten movie recommendations for the user
+ vector<MovieAndRank> recommendations =
+ r.recommend_movies(user_email, 10);
+ if (recommendations.empty())
+ cout << "We found no movies to recommend :(.\n";
+ else {
+for (int i = 0; i < recommendations.size(); i++) {
+ const MovieAndRank& mr = recommendations[i];
+ Movie* m = md.get_movie_from_id(mr.movie_id);
+ cout << i << ". " << m->get_title() << " ("
+ << m->get_release_year() << ")\n Rating: "
+ << m->get_rating() << "\n Compatibility Score: "
+ << mr.compatibility_score << "\n";
+}
+ }
+}
 
 int main()
 {
@@ -64,31 +86,14 @@ int main()
 //    cout << "all test cases passed! " << endl;
     
     /// USER DATABASE TESTING
-//	UserDatabase udb;
-//	if (!udb.load(USER_DATAFILE))  // In skeleton, load always return false
-//	{
-//		cout << "Failed to load user data file " << USER_DATAFILE << "!" << endl;
-//		return 1;
-//	}
-//    User* u = udb.get_user_from_email("DevNguy@gmail.com");
-//    if (!u)
-//        cout << "user does not exist !!" << endl;
-//    else
-//        u->dump();
-//	for (;;)
-//	{
-//		cout << "Enter user email address (or quit): ";
-//		string email;
-//		getline(cin, email);
-//		if (email == "quit")
-//			return 0;
-//		User* u = udb.get_user_from_email(email);
-//		if (u == nullptr)
-//			cout << "No user in the database has that email address." << endl;
-//		else
-//			cout << "Found " << u->get_full_name() << endl;
-//	}
-    
+    ///
+	UserDatabase udb;
+	if (!udb.load(USER_DATAFILE))  // In skeleton, load always return false
+	{
+		cout << "Failed to load user data file " << USER_DATAFILE << "!" << endl;
+		return 1;
+	}
+
     MovieDatabase mdb;
     if (!mdb.load(MOVIE_DATAFILE)) 
     {
@@ -96,17 +101,8 @@ int main()
         return 1;
     }
     
-    cout << "BOOM: " << endl;
-    vector<Movie*> v = mdb.get_movies_with_actor("Benedict Cumberbatch");
-    for (auto m : v)
-        m->dump();
+    Recommender r(udb, mdb);
     
-
-    
-//    User* u = udb.get_user_from_email("DevNguy@gmail.com");
-//    if (!u)
-//        cout << "user does not exist !!" << endl;
-//    else
-//        u->dump();
+    findMatches(r, mdb, "climberkip@gmail.com", 10);
     
 }

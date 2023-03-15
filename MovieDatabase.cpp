@@ -6,6 +6,11 @@
 #include <fstream>
 using namespace std;
 
+MovieDatabase::~MovieDatabase() {
+    for (auto m : m_moviePointers)
+        delete m;
+}
+
 bool MovieDatabase::load(const string& filename)
 {
     // don't open file if we already loaded users
@@ -55,6 +60,8 @@ bool MovieDatabase::load(const string& filename)
         for (auto g : genres)
             m_genre_tree.insert(g, movie);
         
+        // add pointer to vector member (to handle destruction later)
+        m_moviePointers.push_back(movie);
     
         // clear vectors for reuse
         directors.clear();

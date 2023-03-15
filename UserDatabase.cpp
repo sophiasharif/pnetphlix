@@ -6,6 +6,11 @@
 #include <fstream>
 using namespace std;
 
+UserDatabase::~UserDatabase() {
+    for (auto u : m_users)
+        delete u;
+}
+
 bool UserDatabase::load(const string& filename)
 {
     // don't open file if we already loaded users
@@ -39,9 +44,10 @@ bool UserDatabase::load(const string& filename)
         // skip empty line
         getline(infile, temp);
         
-        // create a user, add to tree multimap
+        // create a user, add to tree multimap & user list
         User* u = new User(name, email, movies);
         m_data.insert(email, u);
+        m_users.push_back(u);
         
         // clear movies vector for reuser
         movies.clear();

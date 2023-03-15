@@ -7,8 +7,6 @@
 template <typename KeyType, typename ValueType>
 class TreeMultimap
 {
-private:
-    class Node;
     
   public:
     class Iterator
