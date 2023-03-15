@@ -39,11 +39,10 @@ bool UserDatabase::load(const string& filename)
         // skip empty line
         getline(infile, temp);
         
-        // create a user, add to tree multimap & user list
-        User u = User(name, email, movies);
-        m_data.insert(email, u);
+        // add user to tree multimap
+        m_data.insert(email, User(name, email, movies));
         
-        // clear movies vector for reuser
+        // clear movies vector for reuse
         movies.clear();
     }
     
@@ -55,5 +54,5 @@ User* UserDatabase::get_user_from_email(const string& email) const
 {
     auto i = m_data.find(email);
     if (!i.is_valid()) return nullptr;
-    return &(i.get_value());  // Replace this line with correct code.
+    return &(i.get_value()); 
 }

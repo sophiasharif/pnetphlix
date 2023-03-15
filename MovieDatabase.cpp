@@ -6,11 +6,6 @@
 #include <fstream>
 using namespace std;
 
-MovieDatabase::~MovieDatabase() {
-    for (auto m : m_moviePointers)
-        delete m;
-}
-
 bool MovieDatabase::load(const string& filename)
 {
     // don't open file if we already loaded users
@@ -48,20 +43,18 @@ bool MovieDatabase::load(const string& filename)
         actors = processDataString(actor_string);
         genres = processDataString(genre_string);
 
-        // create a new movie object
-        Movie* movie = new Movie(id, name, release_year, directors, actors, genres, rating);
+        // add movie to movie list
+        m_movies.push_back(Movie(id, name, release_year, directors, actors, genres, rating));
+        Movie* movie = &(m_movies.back());
         
         // load tree multimaps with data
-        m_id_tree.insert(id, movie); // id
+        m_id_tree.insert(toLower(id), movie); // id
         for (auto d : directors)
-            m_director_tree.insert(d, movie);
+            m_director_tree.insert(toLower(d), movie);
         for (auto a : actors)
-            m_actor_tree.insert(a, movie);
+            m_actor_tree.insert(toLower(a), movie);
         for (auto g : genres)
-            m_genre_tree.insert(g, movie);
-        
-        // add pointer to vector member (to handle destruction later)
-        m_moviePointers.push_back(movie);
+            m_genre_tree.insert(toLower(g), movie);
     
         // clear vectors for reuse
         directors.clear();
@@ -75,7 +68,7 @@ bool MovieDatabase::load(const string& filename)
 
 Movie* MovieDatabase::get_movie_from_id(const string& id) const
 {
-    auto i = m_id_tree.find(id);
+    auto i = m_id_tree.find(toLower(id));
     if (!i.is_valid())
         return nullptr;
     return i.get_value();
@@ -83,7 +76,7 @@ Movie* MovieDatabase::get_movie_from_id(const string& id) const
 
 vector<Movie*> MovieDatabase::get_movies_with_director(const string& director) const
 {
-    auto i = m_director_tree.find(director);
+    auto i = m_director_tree.find(toLower(director));
     vector<Movie*> res;
     while (i.is_valid()) {
         res.push_back(i.get_value());
@@ -94,7 +87,7 @@ vector<Movie*> MovieDatabase::get_movies_with_director(const string& director) c
 
 vector<Movie*> MovieDatabase::get_movies_with_actor(const string& actor) const
 {
-    auto i = m_actor_tree.find(actor);
+    auto i = m_actor_tree.find(toLower(actor));
     vector<Movie*> res;
     while (i.is_valid()) {
         res.push_back(i.get_value());
@@ -104,7 +97,7 @@ vector<Movie*> MovieDatabase::get_movies_with_actor(const string& actor) const
 
 vector<Movie*> MovieDatabase::get_movies_with_genre(const string& genre) const
 {
-    auto i = m_genre_tree.find(genre);
+    auto i = m_genre_tree.find(toLower(genre));
     vector<Movie*> res;
     while (i.is_valid()) {
         res.push_back(i.get_value());

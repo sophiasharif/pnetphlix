@@ -26,8 +26,8 @@ using namespace std;
   // data files to makde debuggiing easier, so you can replace the string
   // literals with the names of those smaller files.
 
-const string USER_DATAFILE  = "/Users/sophiasharif/Desktop/projects/CS32/project-4/data/recommender-test/users.txt";
-const string MOVIE_DATAFILE = "/Users/sophiasharif/Desktop/projects/CS32/project-4/data/recommender-test/movies.txt";
+const string USER_DATAFILE  = "/Users/sophiasharif/Desktop/projects/CS32/project-4/data/provided/users.txt";
+const string MOVIE_DATAFILE = "/Users/sophiasharif/Desktop/projects/CS32/project-4/data/provided/movies.txt";
 
 void findMatches(const Recommender& r,
  const MovieDatabase& md,
@@ -95,14 +95,14 @@ int main()
 	}
 
     MovieDatabase mdb;
-    if (!mdb.load(MOVIE_DATAFILE)) 
+    if (!mdb.load(MOVIE_DATAFILE))
     {
         cout << "Failed to load user data file " << USER_DATAFILE << "!" << endl;
         return 1;
     }
     
     Recommender r(udb, mdb);
-    
-    findMatches(r, mdb, "climberkip@gmail.com", 10);
+
+    findMatches(r, mdb, "AbFow2483@charter.net", 10);
     
 }
